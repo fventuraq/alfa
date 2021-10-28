@@ -59,7 +59,7 @@ You will need to install NPM in the machine that will run the api.
 In a ubuntu environment only run 
 
 ```
-sudo apt get install npm
+sudo apt-get install npm
 ```
 
 ## Docker and Docker Compose
