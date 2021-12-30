@@ -25,6 +25,20 @@
             </li>
 
             <li>
+              <router-link to="/network">
+                <v-icon name="git-commit"></v-icon>
+                Network
+              </router-link>
+            </li> 
+
+            <li>
+              <router-link to="/chains">
+                <v-icon name="layers"></v-icon>
+                Chains
+              </router-link>
+            </li>
+
+            <li>
               <router-link to="/device">
                 <v-icon name="cast"></v-icon>
                 Virtual Devices

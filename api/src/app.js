@@ -11,6 +11,8 @@ const locationRoutes = require('./routes/locationRoutes');
 const deviceRoutes   = require('./routes/deviceRoutes');
 const vmsTypeRoutes  = require('./routes/vmsTypeRoutes');
 const vmsRoutes      = require('./routes/vmsRoutes');
+const networkRoutes = require('./routes/networkRoutes');
+const chainRoutes = require('./routes/chainRoutes');
 const nodesRoutes    = require('./routes/nodeRoutes');
 const maestroRoutes    = require('./routes/maestroRoutes');
 const configurationRoutes    = require('./routes/configurationRoutes');
@@ -49,5 +51,9 @@ app.use('/configuration', configurationRoutes);
 app.use('/plugins/melinda', melindaRoutes);
 
 app.use('/', index);
+
+app.use('/network', networkRoutes);
+
+app.use('/chain', chainRoutes);
 
 module.exports = app;
