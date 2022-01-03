@@ -18,6 +18,8 @@ const cron = {
                     docker.api(masterNode[0].ip)
                     .then(async (api) => {
 
+                        console.log('mi Ip', masterNode[0].ip, node.dockerId);
+
                         // update the status
                         if (!node) {
                             return res.status(422).send('Dockerid not found in Edge node');
@@ -71,13 +73,13 @@ const cron = {
                                          })
                                 })
                                 .catch(err => {
-                                    // console.log('A');                                    
-                                    // console.log(err)
+                                    console.log('A');                                    
+                                     console.log(err)
                                 });
                             })
                             .catch(err => {
-                                // console.log('B');
-                                // console.log(err)
+                                console.log('B');
+                                console.log(err)
                             });
 
                     })     
