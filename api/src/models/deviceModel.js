@@ -29,7 +29,13 @@ var devicesSchema = new Schema({
   'dockerId' : { // define which container docker is access this device, if null it means that the device is stopped 
     type: String,
     default: ""
-  }
+  },
+  'forward': [{
+    'name': String,
+    'ip': String,
+    'port': String,
+    'outputType': String       
+  }]
 },{
   timestamps: true
 });

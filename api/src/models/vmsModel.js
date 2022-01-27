@@ -35,8 +35,10 @@ var vmsSchema = new Schema({
         required: true
     },
     'forward': [{
+        'name': String,
         'ip': String,
-        'port': String,        
+        'port': String,
+        'outputType': String        
     }],
     'monitor': [{
         'senderip': String,

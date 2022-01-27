@@ -150,6 +150,25 @@ export const apiVms = {
     })
   },
 
+  getVmsToSelect() {
+    return new Promise((resolve, reject) => {
+      config.api.get(`/vms/`)
+        .then(resp => {
+          let vmss = []
+          resp.data.forEach(vms => {
+            vmss.push({
+              text: vms.name,
+              value: vms._id
+            })            
+          })
+          resolve(vmss);
+        })
+        .catch(e => {
+          reject(e)
+        })
+    })
+  },
+
   getVms (vmsId) {
     return new Promise((resolve, reject) => {
       config.api.get(`/vms/${vmsId}`)

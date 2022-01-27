@@ -155,16 +155,23 @@ const vmsController = {
     // Start or recreate a VMS
     post: async (req, res, next) => {
 
+      if(!req.body){
+        req.body = req
+      }
+
       let nodeIp = req.body.nodeIp; // Retrieve the actual ip
       let outputType = req.body.outputType; // Define the multimedia stream type that the VMS will output
+
+      console.log('nodeIp: ', nodeIp, 'outputType: ', outputType )
 
       // Verify if the Edge Node selection will be done by a Resource Allocation Function or manually
       // it there is in the folder node/ra a file with the nodeIp it means that the selection will 
       // be done by a resource allocation algorithm
       const dirPath = path.join(__dirname, 'node/ra');
+      console.log('dirPath222', `${dirPath}/${nodeIp}.js`)
       let nodeResult = {};
       try {
-        if (fs.existsSync(`${dirPath}/${nodeIp}.js`)) {
+        if (fs.existsSync(`${dirPath}/${nodeIp}.js`)) {          
           // Find the image from the VMS that will be started
           vmsType = await vmsTypeModel.findById(req.body.vmsType)
             .then((result) => {
@@ -203,12 +210,17 @@ const vmsController = {
         });
       }
 
+      console.log("nodeIP....", nodeIp)
+
       docker.api(nodeIp)
         .then((api) => {
+          console.log("ENTRO ACAAAAAAAAAAAA docker.api")
           let vmsType = req.body.vmsType;
           let startupParameters = req.body.startupParameters;
           let portForward = req.body.portForward;
           let id = req.body.id;
+
+          console.log("vmsType", vmsType, 'el id es:....', id)
 
           vmsTypeModel.findById(vmsType)
             .then((result) => {
@@ -251,10 +263,13 @@ const vmsController = {
                 // console.log(containerPorts);
                 conf_container['ExposedPorts'] = exposePorts
                 conf_container['HostConfig']['PortBindings'] = containerPorts
+                console.log('VMS TEMPORAL.....', conf_container)
               }              
 
               // console.log(conf_container);              
               // return
+
+              console.log('VMS TEMPORAL.....', conf_container)
 
               api.createContainer(conf_container).then(function(container){
                 container.start()

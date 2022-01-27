@@ -8,10 +8,12 @@ const d = {
             return new Promise((resolve, reject) => {
                 getDockerHost((error, ipHost) => {
                     if (ipHost) {
+                        //console.log("ENTRO AL IF EN DOCKER API")
                         // if you whant to know the ip
                         var dockerApi = new Docker({host: ipHost, port: process.env.DOCKER_PORT_API});                    
                         resolve(dockerApi);                
                     } else {
+                        console.log("ENTRO AL ELSE EN DOCKER API")
                         reject(new Error(`Error whem connection to docker ${error}`))
                     }
                 })

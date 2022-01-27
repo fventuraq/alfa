@@ -179,6 +179,28 @@ export default new Router({
       path: '/plugins/melinda',
       name: 'pluginsMelindaConfig',
       component: () => import(/* webpackChunkName: "nodeImages" */ './views/plugins/MELINDA/Melinda.vue')
-    },    
+    },  
+     //Chains
+     {
+      path: '/chains',
+      name: 'serviceChains',
+      component: () => import( './views/chains/Index.vue')
+    },
+    {
+      path: '/chains/new',
+      name: 'chainNew',
+      component: () => import(/* webpackChunkName: "vmsNew" */ './views/chains/New.vue')
+    },
+    //Network
+    {
+      path: '/network',
+      name: 'nwtworkList',
+      component: () => import( './views/network/Index.vue')
+    },
+    /* {
+      path: '/network/new',
+      name: 'networkNew',
+      component: () => import(/* webpackChunkName: "vmsNew" *//* './views/network/New.vue')
+    }, */
   ]
 })

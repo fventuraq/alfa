@@ -8,7 +8,17 @@ var vmsTypeSchema = new Schema({
 	'startupParameters' : String,
 	'src' : Number,
 	'sdp' : String,
-	'ports' : String
+	'ports' : String,
+	'listPorts': [
+		{
+			'inputType': String,
+			'port': String			
+		}
+	],
+	'connectivityType': {
+		'layerProtocol': String,
+		'flowPatter': String
+	}
 },{
   timestamps: true
 });

@@ -3,7 +3,7 @@ const vmsTypeModel = require("../models/vmsTypeModel")
 const vmsTypeController = {
     listVms: (req, res, next) => {
         vmsTypeModel.find({src:0})
-            .select('name dockerImage')
+            .select('name dockerImage listPorts connectivityType')
             .then(vmsTypes => {
                 return res.status(201).json(vmsTypes);
             })
@@ -58,7 +58,9 @@ const vmsTypeController = {
             description: req.body.description,
             src: req.body.src,
             sdp: req.body.sdp,
-            ports: req.body.ports
+            ports: req.body.ports,
+            listPorts: req.body.listPorts,
+            connectivityType: req.body.connectivityType
         })                
         
         vmsType.save((err,vmsType) => {
@@ -90,6 +92,8 @@ const vmsTypeController = {
             vmsType.src = req.body.src
             vmsType.sdp = req.body.sdp
             vmsType.ports = req.body.ports
+            vmsType.listPorts = req.body.listPorts
+            vmsType.connectivityType = req.body.connectivityType
 
             vmsType.save(function (err, vmsType) {
                 /* istanbul ignore next */ 

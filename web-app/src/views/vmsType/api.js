@@ -54,6 +54,26 @@ export const apiVmsType = {
         })
     })
   },
+  getVmsTypesToSelect() {
+    return new Promise((resolve, reject) => {
+      config.api.get(`/vmsType/listVms`)
+        .then(resp => {
+          let typesVms = []          
+          resp.data.forEach(vmsTypes => {
+            typesVms.push({
+              text: vmsTypes.name,
+              value: vmsTypes._id,
+              inputPorts: vmsTypes.listPorts,
+              connectivityType: vmsTypes.connectivityType
+            })
+          })
+          resolve(typesVms);
+        })
+        .catch(e => {
+          reject(e)
+        })
+    })
+  },
   getVmsTypesSrc () {
     return new Promise((resolve, reject) => {
       config.api.get(`/vmsType/listSrc`)
