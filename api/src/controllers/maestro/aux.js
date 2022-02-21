@@ -45,7 +45,7 @@ const maestroControllerAux = {
     // MQTT client connect        
     const mqtt_client = await MQTT.connectAsync(process.env.MQTT_SERVER)
 
-    // string that the Virtual Device is waiting to to the bind
+    // string that the Virtual Device is waiting to to the bind    
     let aux_name = `${port}${vms.dockerId.substring(0,11).replace(/[a-z]/g,'').substring(0,11)}`
     let pub_string = `${ipDockerContainer};${port};${aux_name};A`
     
@@ -63,7 +63,7 @@ const maestroControllerAux = {
     });
 
     return vms.save()
-        .then((ret) => {             
+        .then((ret) => {                
             return ret
         })
     }

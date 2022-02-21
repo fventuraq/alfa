@@ -1,0 +1,39 @@
+[2022-02-16 18:34:10.728] [exthost] [info] Extension host with pid 7209 started
+[2022-02-16 18:34:10.728] [exthost] [info] Skipping acquiring lock for /home/franklin/VPrisma/alfa/~/.vscode-root/User/workspaceStorage/501e89aa8b60dfd6aa72a1ab3aff179c.
+[2022-02-16 18:34:10.960] [exthost] [info] ExtensionService#_doActivateExtension vscode.configuration-editing, startup: false, activationEvent: 'onLanguage:json'
+[2022-02-16 18:34:10.974] [exthost] [info] ExtensionService#_doActivateExtension vscode.extension-editing, startup: false, activationEvent: 'onLanguage:json'
+[2022-02-16 18:34:10.997] [exthost] [info] ExtensionService#_doActivateExtension vscode.json-language-features, startup: false, activationEvent: 'onLanguage:json'
+[2022-02-16 18:34:11.201] [exthost] [info] ExtensionService#_doActivateExtension vscode.npm, startup: false, activationEvent: 'onLanguage:json'
+[2022-02-16 18:34:11.264] [exthost] [info] ExtensionService#_doActivateExtension vscode.microsoft-authentication, startup: false, activationEvent: 'onAuthenticationRequest:microsoft'
+[2022-02-16 18:34:11.386] [exthost] [info] ExtensionService#_doActivateExtension vscode.debug-auto-launch, startup: true, activationEvent: '*'
+[2022-02-16 18:34:11.401] [exthost] [info] ExtensionService#_doActivateExtension vscode.git-base, startup: true, activationEvent: '*', root cause: vscode.github
+[2022-02-16 18:34:11.617] [exthost] [info] ExtensionService#_doActivateExtension vscode.github, startup: true, activationEvent: '*'
+[2022-02-16 18:34:11.885] [exthost] [info] ExtensionService#_doActivateExtension vscode.github-authentication, startup: false, activationEvent: 'onAuthenticationRequest:github'
+[2022-02-16 18:34:12.620] [exthost] [info] Eager extensions activated
+[2022-02-16 18:34:12.629] [exthost] [info] ExtensionService#_doActivateExtension vscode.emmet, startup: false, activationEvent: 'onStartupFinished'
+[2022-02-16 18:34:12.652] [exthost] [info] ExtensionService#_doActivateExtension vscode.merge-conflict, startup: false, activationEvent: 'onStartupFinished'
+[2022-02-16 18:38:27.471] [exthost] [info] ExtensionService#_doActivateExtension vscode.git, startup: false, activationEvent: 'api', root cause: vscode.github
+[2022-02-16 18:39:04.118] [exthost] [info] ExtensionService#_doActivateExtension vscode.markdown-language-features, startup: false, activationEvent: 'onLanguage:markdown'
+[2022-02-16 18:39:04.792] [exthost] [info] ExtensionService#_doActivateExtension vscode.markdown-math, startup: false, activationEvent: 'api', root cause: vscode.markdown-language-features
+[2022-02-16 18:39:05.144] [exthost] [info] ExtensionService#_doActivateExtension vscode.typescript-language-features, startup: false, activationEvent: 'onLanguage:jsonc'
+[2022-02-16 18:39:20.509] [exthost] [info] ExtensionService#_doActivateExtension octref.vetur, startup: false, activationEvent: 'onLanguage:vue'
+[2022-02-16 18:39:30.806] [exthost] [error] [octref.vetur] provider FAILED
+[2022-02-16 18:39:30.807] [exthost] [error] Error: Request textDocument/semanticTokens/full failed with message: Cannot read property 'flags' of undefined
+	at /root/.vscode/extensions/octref.vetur-0.35.0/dist/vueMain.js:1:64858
+	at /root/.vscode/extensions/octref.vetur-0.35.0/dist/vueMain.js:1:65153
+	at Immediate.<anonymous> (/root/.vscode/extensions/octref.vetur-0.35.0/dist/vueMain.js:1:65518)
+	at processImmediate (internal/timers.js:461:21)
+[2022-02-16 18:39:30.808] [exthost] [error] [octref.vetur] provider FAILED
+[2022-02-16 18:39:30.808] [exthost] [error] Error: Request textDocument/semanticTokens/range failed with message: Cannot read property 'flags' of undefined
+	at /root/.vscode/extensions/octref.vetur-0.35.0/dist/vueMain.js:1:64858
+	at /root/.vscode/extensions/octref.vetur-0.35.0/dist/vueMain.js:1:65153
+	at Immediate.<anonymous> (/root/.vscode/extensions/octref.vetur-0.35.0/dist/vueMain.js:1:65518)
+	at processImmediate (internal/timers.js:461:21)
+[2022-02-16 18:39:39.925] [exthost] [error] [octref.vetur] provider FAILED
+[2022-02-16 18:39:39.925] [exthost] [error] Error: Request textDocument/semanticTokens/range failed with message: Cannot read property 'flags' of undefined
+	at /root/.vscode/extensions/octref.vetur-0.35.0/dist/vueMain.js:1:64858
+	at /root/.vscode/extensions/octref.vetur-0.35.0/dist/vueMain.js:1:65153
+	at Immediate.<anonymous> (/root/.vscode/extensions/octref.vetur-0.35.0/dist/vueMain.js:1:65518)
+	at processImmediate (internal/timers.js:461:21)
+[2022-02-16 22:54:11.248] [exthost] [info] extension host terminating: renderer closed the socket
+[2022-02-16 22:54:11.270] [exthost] [info] Extension host with pid 7209 exiting with code 0

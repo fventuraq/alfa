@@ -71,36 +71,6 @@
                     :fields="vmss" 
                     striped 
                     responsive="sm">
-
-                        <!--<template v-slot:cell(myVmss)="myVmss">
-                            DATOSSS {{ `CARACA ${myVmss.forWard[0].port}` }}
-                        </template>
-
-                        <template v-slot:cell(forWard)="myVmss"> 
-                            <div v-for="forWard in myVmss.forWard" :key="forWard.name">                                
-                                DATA {{ forWard.name }} {{ forWard.port }}
-                            </div> 
-                        </template>-->
-
-                        <!--<template v-slot:cell(forWard)="myVmss">
-                            <div v-for="forWard in myVmss.forWard" :key="forWard.port">
-                                {{ forWard.name }}
-                            </div>
-                        </template>-->
-
-                        <!--<template v-slot:cell(forWard)="myVmss" >
-                            <div v-for="x in myVmss.forWard" :key="x.port">
-                                {{x.name}} {{ x.port }}
-                            </div>
-                        </template>-->
-
-                        <!--<template slot="forWard" slot-scope="myVmss">
-                            <div v-for="x in myVmss.forWard" :key="x.port">
-                                Date {{x.port}}
-                            </div>
-                        </template>-->
-
-
                         <template v-slot:cell(actions)="row">
                             <b-button variant="danger" size="sm" @click="removeVms(row.item)" class="mr-2">
                                 <v-icon name="trash"></v-icon>
@@ -113,10 +83,41 @@
 
             <b-row>
                 <b-col class="text-right">
-                    <b-button type="submit" variant="primary">Save</b-button>
-                    
+                    <b-button type="submit" variant="primary">Save</b-button>                    
                     <b-button to="/vmsType" variant="secondary">Cancel</b-button> 
+                </b-col>                
+            </b-row>
+
+            <b-row>
+                <b-col class="text-right">
+                    <b-button variant="success" size="sm" @click="exportToJsonFile()" class="mr-2"> 
+                        <!--<v-icon name="plus"></v-icon> -->
+                        Export JSON
+                    </b-button>                    
+
+                    <input type="file" id="selectFiles" value="Import" /><br />
+
+                    <b-button variant="primary" id="import" size="sm" @click="importJsonFile()" class="mr-2"> 
+                        <!--<v-icon name="plus"></v-icon> -->
+                        Import JSON
+                    </b-button> 
+                    
+                    <textarea id="result"></textarea>
+
+                    <b-button variant="primary" size="sm" @click="runJson()" class="mr-2"> 
+                        <!--<v-icon name="plus"></v-icon> -->
+                        RUN JSON
+                    </b-button>
+
+                    
+
                 </b-col>
+
+                <!--<b-col class="text-right">
+                    <b-button variant="success" size="sm" @click="exportToXmlFile()" class="mr-2">                        
+                        Export XML
+                    </b-button>  
+                </b-col>-->
             </b-row>
         </b-form>
 
@@ -138,40 +139,66 @@
 
             <span><b>Add ForWards</b></span>
 
-                <form ref="formForWard" @submit.stop.prevent="handleSubmitForWard2">
-                    <b-row>
-                        <input type="checkbox" id="isAddVms" v-model="isAddVms"/>
-                        <label for="isAddVms">VMS</label>
-                        <b-col>                            
-                            <div v-if="isAddVms">                           
-                            <b-form-group id="input-group-5" label="Select VMS:" label-for="ip">
-                                <b-form-select required style="margin-top:0px!important" id="ip" v-model="formForWard.ip"  size="sm" class="mt-3">
-                                    <option v-for="option in myVmss" :value="option.name" :key="option.name">
-                                        {{ option.name }}
+            <b-form-checkbox  id="isAddVms" v-model="isAddVms" switch>IS VMS</b-form-checkbox>
+
+            <form ref="formForWard" @submit.stop.prevent="handleSubmitForWard2">
+                <b-row>
+                    <b-col>                            
+                        <div v-if="isAddVms">                           
+                        <b-form-group id="input-group-5" label="Select VMS:" label-for="ip">
+                            <b-form-select required style="margin-top:0px!important" id="ip" v-model="formForWard.name" @input="selectVMSdestine" size="sm" class="mt-3">
+                                <option v-for="option in myVmss" :value="option.name" :key="option.name">
+                                    {{ option.name }}
+                                </option>
+                            </b-form-select>
+                        </b-form-group>
+                        </div>
+                        
+                        <div v-else>
+                        <b-form-group id="input-group-5" label="Add IP:" label-for="ip">
+                            <b-form-input id="ip" v-model="formForWard.ip" type="text" autocomplete="off" required/>                            
+                        </b-form-group>
+                        </div>
+                    </b-col>
+
+                    <b-col>
+                        <div v-if="isAddVms">
+                            <b-form-group id="input-group-5" label="Select PORT:" label-for="ip">
+                                <b-form-select required style="margin-top:0px!important" id="ip" v-model="formForWard.port"  @input="selectPortDestine" size="sm" class="mt-3">
+                                    <option v-for="option in miniListPorts" :value="option.port" :key="option.port">
+                                        {{ option.port }}
                                     </option>
                                 </b-form-select>
                             </b-form-group>
-                            </div>
-                            
-                            <div v-else>
-                            <b-form-group id="input-group-5" label="Add IP:" label-for="ip">
-                                <b-form-input id="ip" v-model="formForWard.ip" type="text" autocomplete="off" required/>                            
-                            </b-form-group>
-                            </div>
-                        </b-col>
+                        </div>
 
-                        <b-col>
+                        <div v-else>
                             <b-form-group id="input-group-5" label="Add PORT:" label-for="port">                                
                                 <b-form-input id="port" v-model="formForWard.port" type="number" autocomplete="off" required/>
                             </b-form-group>
-                        </b-col>
-                    
-                        <b-col>
-                            <br/>
-                            <b-button type="submit" variant="success">Add</b-button>
-                        </b-col>
-                    </b-row>
-                </form> 
+                        </div>
+                    </b-col>
+
+                    <b-col>
+                        <div v-if="isAddVms">
+                            <b-form-group id="input-group-5" label="Output Type:" label-for="outputType">
+                                <b-form-input id="input-group-7" v-model="formForWard.outputType" type="text" autocomplete="off" readonly="readonly" required/>                            
+                            </b-form-group>
+                        </div>
+
+                        <div v-else>
+                            <b-form-group id="input-group-5" label="Output Type:" label-for="outputType">                           
+                                <b-form-select id="input-group-7" v-model="formForWard.outputType" :options="outputTypeOptions"></b-form-select>
+                            </b-form-group>
+                        </div>
+                    </b-col>
+
+                    <b-col>
+                        <br/>
+                        <b-button type="submit" variant="success">Add</b-button>
+                    </b-col>
+                </b-row>
+            </form>                 
                 <b-table
                 small
                 :busy="isBusy"
@@ -190,9 +217,7 @@
                             <v-icon name="trash"></v-icon>
                         </b-button>
                     </template>
-
                 </b-table>
-
         </b-modal>
 
         <b-modal 
@@ -222,11 +247,11 @@
                     <template v-slot:cell(myPort)="ports">
                         {{ ports.port }}
                     </template>
-                    <template v-slot:cell(actions)="row">
+                    <!--<template v-slot:cell(actions)="row">
                         <b-button variant="danger" size="sm" @click="removePort(row.item)" class="mr-2">
                             <v-icon name="trash"></v-icon>
                         </b-button>
-                    </template>
+                    </template>-->
 
                 </b-table>
                 <b-form-group id="input-group-3" label="Select Edge node:" label-for="node">
@@ -682,6 +707,7 @@ export default {
             console.log('hice clic en añadir forward');
         },
         removeForWard2(value){
+            value.preventDefault()
             console.log('hice clic en remover forWard EN DEVICE', value);
             for(let i = 0; i < this.listForWard.length; i++){
                 if( value.ip == this.listForWard[i].ip && value.port == this.listForWard[i].port){
@@ -694,10 +720,155 @@ export default {
         handleSubmitForWard2(evt){
             evt.preventDefault()
             console.log('esto es lo que llega ', this.formForWard);
+
+            if ( this.formForWard.name == ''){
+                this.formForWard.name = this.formForWard.ip
+            }
+
             this.listForWard.push(this.formForWard)
-            this.formForWard = {}
+            this.formForWard = {
+                name: '',
+                ip: '',
+                port: '',
+                outputType: null
+            }
             this.device.forWard = this.listForWard
-            console.log('hice clic en añadir forward');
+
+            console.log('hice clic en añadir forward DEVICE');            
+        },
+        importJsonFile(){
+            console.log("HICE CLIC EN IMPORT JSON");
+
+            
+            document.getElementById('import').onclick = function(){
+                let files = document.getElementById('selectFiles').files
+                console.log("mi file", files);
+
+                if(files.length <= 0){
+                    return false
+                }
+
+                let fr = new FileReader()
+                
+                fr.onload =function(e) {
+                    let result = JSON.parse(e.target.result)
+
+                    console.log("result es:", result)
+
+                    this.form = result
+                    this.myDevices = this.form.devices
+                    this.myVmss = this.form.vmss
+
+                    console.log("MIS DEVICES", this.myDevices);
+                    console.log("MIS VMSS", this.myDevices);
+
+                    console.log('FORM ES:', this.form);
+                    let formatted = JSON.stringify(result, null, 2)
+
+                    document.getElementById('result').value = formatted
+                }
+
+                fr.readAsText(files.item(0))
+            }
+        },
+        runJson(){
+            console.log("el formulario que envio es: ", this.form);
+            apiChain.newChain(this.form)
+                .then(() => {
+                    console.log('entro al THEN');
+                    this.msg.text = "SERVICE CHAIN created"
+                    this.msg.type = "success"
+                    this.msg.show = true
+                    this.isLoading = false
+                })
+                .catch(e => {
+                    console.log('entro al CATCH');
+                    console.log(e)
+                    this.msg.text = `Error when creating SERVICE CHAIN ${e}`
+                    this.msg.type = "danger"
+                    this.msg.show = true
+                    this.isLoading = false
+                })
+        },
+        exportToJsonFile(){
+
+            console.log("HICE CLIC EN EXPORTAR A JSON :", this.form)
+
+            
+            let dataStr = JSON.stringify(this.form)
+            let dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr)
+
+            let exportFileDefaultName = `${this.form.name}.json`
+
+            let linkElement = document.createElement('a')
+            linkElement.setAttribute('href', dataUri)
+            linkElement.setAttribute('download', exportFileDefaultName)
+            linkElement.click()
+        },
+        exportToXmlFile(){
+
+            console.log("HICE CLIC EN EXPORTAR A XML :", this.form)
+
+            let dataStr = JSON.stringify(this.form)
+            let tab = this.form.name
+
+            let xmltext = this.jsonToXml(dataStr, tab)
+
+            let fileName = `${this.form.name}.xml`
+            let linkElement = document.createElement('a')
+            let bb = new Blob([xmltext], {type: 'text/plain'})
+
+            linkElement.setAttribute('href', window.URL.createObjectURL(bb))
+            linkElement.setAttribute('donwload', fileName)
+
+            linkElement.dataset.dowloadurl = ['text/plain', linkElement.download, linkElement.href].join(':')
+            linkElement.draggable = true
+            linkElement.classList.add('dragout')
+
+            linkElement.click()
+        },
+        jsonToXml(o, tab){
+
+            console.log("UTILICE LA FUNCION JSONTOXML :")
+            let toXml = function(v, name, ind) {
+                let xml = ""
+                if(v instanceof Array) {
+                    for(let i = 0, n=v.length; i<n; i++ ){
+                        xml += ind + toXml(v[i], name, ind+"\t") + "\n"
+                    }
+                }else if(typeof(v) == "object") {
+                    let hasChild = false
+                    xml += ind + "<" + name
+                    for(var m in v) {
+                        if(m.charAt(0) == "@"){
+                            xml += " " + m.substr(1) + "=\"" + v[m].toString() + "\""
+                        }else{ 
+                            hasChild = true
+                        }                        
+                    }
+
+                    xml += hasChild ? ">" : "/>"
+                    if(hasChild) {
+                        for(let m in v){
+                            if(m == "#text"){
+                                xml += v[m]
+                            }else if(m == "#cdta"){
+                                xml += "<![CDATA[" + v[m] + "]]>"
+                            }else if(m.charAt(0) != "@"){
+                                xml += toXml(v[m], m, ind+"\t")
+                            }
+                        }
+                        xml += (xml.charAt(xml.length-1) == "\n"?ind:"") + "</" + name + ">"
+                    }
+                }else {
+                    xml += ind + "<" + name + ">" + v.toString() + "</" + name +">"
+                }
+                return xml
+            }, xml=""
+            for ( let m in o){
+                xml += toXml(o[m], m, "")
+            }
+            return tab ? xml.replace(/\t/g, tab) : xml.replace(/\t|\n/g, "")
         },    
         firLoad() {
             for(let i = 0; i < this.form.devices.length; i++){

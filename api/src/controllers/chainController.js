@@ -3,6 +3,8 @@ const networkModel = require("../models/networkModel")
 const vmsModel = require("../models/vmsModel")
 const deviceModel = require("../models/deviceModel")
 const vmsController = require("../controllers/vmsController")
+const MQTT = require("async-mqtt");
+const maestroControllerAux = require("./maestro/aux")
 
 const docker = require("../util/dockerApi")
 
@@ -15,13 +17,6 @@ const { isArray } = require("util")
 const nodeModel = require("../models/nodeModel")
 const cron = require("./node/cron")
 const { Console } = require("console")
-
-async function test2(vmsTypeID){
-    console.log("ENTRE A TEST2", vmsTypeID)
-    let result2 = await vmsTypeModel.findById(vmsTypeID)
-
-    return result2
-}
 
 async function test3(vms) {
     
@@ -145,7 +140,7 @@ async function test3(vms) {
                         message: 'Error 1  when creating vmsType',
                         error: err
                     })
-                }
+                }                
             })
     
             cron.update()
@@ -154,8 +149,7 @@ async function test3(vms) {
 
                 if(container2[k].Id == myVms.dockerId){
                     var networkModel2 = process.env.DOCKER_OVERLAY_NETWORK
-                    let ip = container2[k].NetworkSettings.Networks[networkModel2].IPAddress
-                    console.log(`ESTAs ES LA IP CARITA FECHERITA`, ip)
+                    let ip = container2[k].NetworkSettings.Networks[networkModel2].IPAddress                    
     
                     if(ip) {
                         let datos = {
@@ -172,9 +166,116 @@ async function test3(vms) {
         }
     })
 
-    console.log("TEMPORAsL", temp)
-
     return temp
+}
+
+async function runDevice(tempDevice) {
+    let id = tempDevice.id;
+
+    let device = await deviceModel.findById(id)
+        .populate('node')
+        .exec()
+        .then( device => {
+            return device
+        }).catch(err => {
+            console.log(err)
+            console.log("Edge Node Offline")
+            return res.status(422).send(`${err.errors} Edge Node offline`);
+        })
+
+    let createParameters = {}
+    createParameters.Image = device.connectionType
+    createParameters.Cmd = [`${device.id} ${device.connectionParameters}`]
+
+    if(device.physicalPath) {
+        createParameters.HostConfig = {
+            NetworkMode: process.env.DOCKER_OVERLAY_NETWORK,
+            Devices: [{
+                PathOnHost: device.physicalPath,
+                PathInContainer: device.physicalPath,
+                CgroupPermissions: "rwm"
+            }]
+        }
+    } else {
+        createParameters.HostConfig = {
+            NetworkMode: process.env.DOCKER_OVERLAY_NETWORK,
+        }
+    }
+
+    let api = await docker.api(device.node.ip)
+                .then((api) => { 
+                    return api
+                }).catch(function(err){
+                    console.log(err)
+                    return err
+                })
+
+    let container = await api.createContainer(createParameters)
+                        .then((container) => {
+                            return container
+                        }).catch(function(err) {
+                            console.log(err)
+                            return err
+                        })
+
+    let data = await container.start()
+            .then((data) => {
+                device.dockerId = data.id
+                device.save()
+
+                return data
+
+            }).catch(function(err){
+                console.log(err)
+                return err
+            })   
+
+    let contador2 = 0
+
+    for(let l = 0; l<tempDevice.forWard.length; l++){ 
+
+        let params = {
+            dockerDeviceId: data.id,
+            deviceId: id,
+            forWard: tempDevice.forWard[l]
+        } 
+
+        let resultAddForWard = await addForWard(params)
+                                .then((result) => {
+                                    contador2++
+                                    return result
+                                })  
+    }  
+
+    return data    
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function addForWard(params) {
+
+    await sleep(7000)
+
+    const mqtt_client = await MQTT.connectAsync(process.env.MQTT_SERVER)    
+
+    let dockerDeviceId = params.dockerDeviceId
+    let deviceId = params.deviceId
+    let forWard = params.forWard
+
+    let aux_name = `${forWard.port}${forWard.name}`
+    let pub_string = `${forWard.ip};${forWard.port};${aux_name};A`
+
+    try {        
+        await mqtt_client.publish(deviceId.toString(),pub_string)
+        await mqtt_client.end();
+
+        return "TERMINE DE ADICIONAR el forward"
+
+    } catch (e){
+        console.log(e.stack)
+    } 
 }
 
 const chainController = {
@@ -213,31 +314,42 @@ const chainController = {
 
         for (let i = 0; i < req.body.vmss.length; i++) {
 
-            console.log("VMS QUE ENVIO A TEST()", req.body.vmss[i])
-
-            //let data = await test3(req.body.vmss[i])
-            
-
             let data = await test3(req.body.vmss[i])
             .then((data) => {
-                console.log("ESTO LLEGA DE TEST", data)
 
                 if(data || data.ip){
 
                     for(let v = i+1; v < req.body.vmss.length; v++){
                                                             
                         let tempVms = req.body.vmss[v]
-                        console.log("ENTREe A CAMBsIAR LA IP:", tempVms.forWard[0])
 
                         for(let f = 0; f < tempVms.forWard.length; f++){
                             let temForWard = tempVms.forWard[f]
                             if(temForWard.name == req.body.vmss[i].name){
 
                                 if(data.ip){
-                                    req.body.vmss[v].forWard[f].ip = data.ip
-                                    console.log('MI LISTA DE VMS DE FROnT', req.body.vmss[v].forWard[f])
+                                    req.body.vmss[v].forWard[f].ip = data.ip                                    
+                                    req.body.vmss[v].forWard[f].vmsId = data.vmsId                                    
                                 }else{
                                     req.body.vmss[v].forWard[f].ip = "undefined"
+                                }
+                            }
+                        }
+                    }
+
+                    for( let d = 0; d < req.body.devices.length; d++) {                        
+
+                        for( w = 0; w < req.body.devices[d].forWard.length; w++) {
+                            let temForWard = req.body.devices[d].forWard[w]
+
+                            if(temForWard.name == req.body.vmss[i].name){
+                                if(data.ip){
+
+                                    req.body.devices[d].forWard[w].ip = data.ip
+                                    req.body.devices[d].forWard[w].vmsId = data.vmsId
+                                    
+                                }else{
+                                    req.body.devices[d].forWard[w].ip = "undefined"
                                 }
                             }
                         }
@@ -249,6 +361,8 @@ const chainController = {
                         virtualCPU: req.body.vmss[i].virtualCPU
                     })
 
+                    console.log("CHAIN VMS ADD", myChain)
+
                 }
 
                 return data
@@ -256,9 +370,44 @@ const chainController = {
 
             contador++
 
-            if( contador == req.body.vmss.length){
+            let contador2 = 0
 
-                return res.status(201).json(data.data)
+            if( contador == req.body.vmss.length){                
+
+                for (z = 0; z < req.body.devices.length; z++) {
+
+                    let deviceData = await runDevice(req.body.devices[z])
+                    .then((data) => { 
+                        contador2++                    
+                        return data
+                    })
+
+                    myChain.devices.push(req.body.devices[z].id) 
+
+                    console.log("CHAIN DEVICE ADD", myChain)
+
+                    console.log("contador2 es:", contador2, " device lenght es: ", req.body.devices.length)
+
+                    if(contador2 == req.body.devices.length){
+
+                        console.log("ENTRO A GUARDAR LA CADENA DE SERVICIO:", contador2)
+
+                        myChain.save((err, chain) => {
+                            if(err) {
+                                return res.status(500).json({
+                                    message: 'Error when creating chain',
+                                    error: err
+                                });
+                            }
+
+                            console.log("LA RESPUESTA DE LA CADENA GUARDADA ES:---", chain)
+                            return res.status(201).json(chain)
+                        })
+                    }
+
+                }                
+
+                //return res.status(201).json(data.data)
             }
 
         }

@@ -1,0 +1,18 @@
+[2022-02-16 18:34:09.150] [renderer1] [info] IExtensionHostStarter.start() took 658 ms.
+[2022-02-16 18:34:09.223] [renderer1] [error] [Extension Host] (node:7209) [DEP0005] DeprecationWarning: Buffer() is deprecated due to security and usability issues. Please use the Buffer.alloc(), Buffer.allocUnsafe(), or Buffer.from() methods instead.
+(Use `code --trace-deprecation ...` to show where the warning was created)
+[2022-02-16 18:39:30.811] [renderer1] [error] Request textDocument/semanticTokens/range failed with message: Cannot read property 'flags' of undefined: Error: Request textDocument/semanticTokens/range failed with message: Cannot read property 'flags' of undefined
+	at /root/.vscode/extensions/octref.vetur-0.35.0/dist/vueMain.js:1:64858
+	at /root/.vscode/extensions/octref.vetur-0.35.0/dist/vueMain.js:1:65153
+	at Immediate.<anonymous> (/root/.vscode/extensions/octref.vetur-0.35.0/dist/vueMain.js:1:65518)
+	at processImmediate (internal/timers.js:461:21)
+[2022-02-16 18:39:30.811] [renderer1] [error] Request textDocument/semanticTokens/full failed with message: Cannot read property 'flags' of undefined: Error: Request textDocument/semanticTokens/full failed with message: Cannot read property 'flags' of undefined
+	at /root/.vscode/extensions/octref.vetur-0.35.0/dist/vueMain.js:1:64858
+	at /root/.vscode/extensions/octref.vetur-0.35.0/dist/vueMain.js:1:65153
+	at Immediate.<anonymous> (/root/.vscode/extensions/octref.vetur-0.35.0/dist/vueMain.js:1:65518)
+	at processImmediate (internal/timers.js:461:21)
+[2022-02-16 18:39:39.934] [renderer1] [error] Request textDocument/semanticTokens/range failed with message: Cannot read property 'flags' of undefined: Error: Request textDocument/semanticTokens/range failed with message: Cannot read property 'flags' of undefined
+	at /root/.vscode/extensions/octref.vetur-0.35.0/dist/vueMain.js:1:64858
+	at /root/.vscode/extensions/octref.vetur-0.35.0/dist/vueMain.js:1:65153
+	at Immediate.<anonymous> (/root/.vscode/extensions/octref.vetur-0.35.0/dist/vueMain.js:1:65518)
+	at processImmediate (internal/timers.js:461:21)
