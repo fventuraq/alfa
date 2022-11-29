@@ -11,6 +11,10 @@
             </b-col>
 
             <b-col class="text-right">
+            <b-button to="/chains/load" variant="success" class="mr-2">
+                <v-icon name="plus"></v-icon>
+                Load chain
+            </b-button>
             <b-button to="/chains/new" variant="success" class="mr-2">
                 <v-icon name="plus"></v-icon>
                 Create New Chain
@@ -132,7 +136,7 @@ export default {
 
         stopChain(){},
         startChain(){},
-        stopChain(){},
+        //stopChain(){},
         deleteChain(){},
     },
     created() {

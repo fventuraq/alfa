@@ -740,7 +740,7 @@ export default {
             console.log("HICE CLIC EN IMPORT JSON");
 
             
-            document.getElementById('import').onclick = function(){
+            document.getElementById('Import').onclick = function(){
                 let files = document.getElementById('selectFiles').files
                 console.log("mi file", files);
 

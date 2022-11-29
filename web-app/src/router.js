@@ -191,6 +191,11 @@ export default new Router({
       name: 'chainNew',
       component: () => import(/* webpackChunkName: "vmsNew" */ './views/chains/New.vue')
     },
+    {
+      path: '/chains/load',
+      name: 'chainLoad',
+      component: () => import(/* webpackChunkName: "vmsNew" */ './views/chains/Load.vue')
+    },
     //Network
     {
       path: '/network',
