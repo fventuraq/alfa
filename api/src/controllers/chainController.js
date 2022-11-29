@@ -65,6 +65,7 @@ async function test3(vms) {
     let vmsType = vms.vmsType
     let startupParameters = vms.forWard[0].ip + ' ' + vms.forWard[0].port
     let portForward = vms.forWard2
+    console.log( 'portForward:', portForward)
     let id = vms.id
 
     let result = await vmsTypeModel.findById(vmsType)
@@ -264,8 +265,14 @@ async function addForWard(params) {
     let deviceId = params.deviceId
     let forWard = params.forWard
 
+    console.log('deviceId...........', deviceId)
+    console.log('forWard.........', forWard)
+
     let aux_name = `${forWard.port}${forWard.name}`
     let pub_string = `${forWard.ip};${forWard.port};${aux_name};A`
+
+    console.log('aux_name..', aux_name)
+    console.log('pub_string..', pub_string)
 
     try {        
         await mqtt_client.publish(deviceId.toString(),pub_string)
@@ -302,6 +309,8 @@ const chainController = {
     },
 
     post: async (req, res, next) => {
+
+        console.log('entre por router normal')
 
         let myChain = new chainModel({
             name: req.body.name,

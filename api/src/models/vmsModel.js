@@ -11,10 +11,11 @@ var vmsSchema = new Schema({
     'portForward' : String,
     'nameMonitor' : String,
     'dockerId' : String,
-    'outputType': {
+    'dockerIp' : String,
+    /*'outputType': {
         type: String,
         required: true
-    },    
+    },    */
     'node': {
         type: Schema.Types.ObjectId,
         ref: 'node',

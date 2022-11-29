@@ -19,13 +19,15 @@ var chainSchema = new Schema({
                 type: Schema.Types.ObjectId,
                 ref: 'vms',
             },
-            virtualMemory:{
-                'size': Number
+            'virtualMemory':{
+                type: Number,
+                required: true                
             },
-            virtualCPU:{
-                'numCpu': Number
+            'virtualCPU':{
+                type: Number,
+                required: true
             },
-            vnfConfigurableProperties:{}
+            'vnfConfigurableProperties': String
         }
     ]
 

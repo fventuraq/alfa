@@ -13,6 +13,7 @@ const vmsTypeRoutes  = require('./routes/vmsTypeRoutes');
 const vmsRoutes      = require('./routes/vmsRoutes');
 const networkRoutes = require('./routes/networkRoutes');
 const chainRoutes = require('./routes/chainRoutes');
+const chainFileRoutes = require('./routes/chainFileRoutes');
 const nodesRoutes    = require('./routes/nodeRoutes');
 const maestroRoutes    = require('./routes/maestroRoutes');
 const configurationRoutes    = require('./routes/configurationRoutes');
@@ -71,5 +72,7 @@ app.use('/', index);
 app.use('/network', networkRoutes);
 
 app.use('/chain', chainRoutes);
+
+app.use('/chainFile', chainFileRoutes);
 
 module.exports = app;
