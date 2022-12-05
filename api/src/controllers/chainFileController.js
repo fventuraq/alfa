@@ -270,12 +270,15 @@ const chainFileController = {
 
     post: async ( req, res, next ) => {        
 
-        let llego = req.body
+        if(!req.files) {            
+            return res.status(500).json("file is not fund")            
+        }
 
-        //console.log('ENTRE POR ROUTER FILES', llego)        
+        let myFile = req.files[0]
+        let basePath = myFile.destination + myFile.filename        
 
         try {
-            const doc =  await yaml.load(fs.readFileSync('./src/docYaml/test2.yml', 'utf8'));
+            const doc =  await yaml.load(fs.readFileSync( basePath, 'utf8'));
 
             //console.log( 'LLEGO ACA...', doc.chainModel )
 
