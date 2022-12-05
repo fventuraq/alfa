@@ -19,12 +19,10 @@ export const apiChain = {
     },
 
     newChainFile( file ) {
-        console.log('ME LLEGO EL FILE', file);
+
         if(!file) {
             return Promise.reject(new Error('File not informet'))
-        }
-
-        //const formdata = new FormData(document.querySelector(file))        
+        }     
 
         return new Promise((resolve, reject) => {
             config.api.post(`/chainFile/`, file)

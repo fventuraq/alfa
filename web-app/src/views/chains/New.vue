@@ -86,39 +86,7 @@
                     <b-button type="submit" variant="primary">Save</b-button>                    
                     <b-button to="/vmsType" variant="secondary">Cancel</b-button> 
                 </b-col>                
-            </b-row>
-
-            <b-row>
-                <b-col class="text-right">
-                    <b-button variant="success" size="sm" @click="exportToJsonFile()" class="mr-2"> 
-                        <!--<v-icon name="plus"></v-icon> -->
-                        Export JSON
-                    </b-button>                    
-
-                    <input type="file" id="selectFiles" value="Import" /><br />
-
-                    <b-button variant="primary" id="import" size="sm" @click="importJsonFile()" class="mr-2"> 
-                        <!--<v-icon name="plus"></v-icon> -->
-                        Import JSON
-                    </b-button> 
-                    
-                    <textarea id="result"></textarea>
-
-                    <b-button variant="primary" size="sm" @click="runJson()" class="mr-2"> 
-                        <!--<v-icon name="plus"></v-icon> -->
-                        RUN JSON
-                    </b-button>
-
-                    
-
-                </b-col>
-
-                <!--<b-col class="text-right">
-                    <b-button variant="success" size="sm" @click="exportToXmlFile()" class="mr-2">                        
-                        Export XML
-                    </b-button>  
-                </b-col>-->
-            </b-row>
+            </b-row>            
         </b-form>
 
         <b-modal 

@@ -1,6 +1,31 @@
 <template>
     <b-row>
-        <b-col cols="4">
+        <b-col cols="8">
+
+            <h2> List Edge nodes </h2>
+
+            <b-table
+                :busy="isBusy"
+                :items="myNodes" 
+                :fields="fieldsNodes" 
+                striped 
+                responsive="sm">
+
+                <template v-slot:cell(online)="data">
+
+                    <b-badge v-show=data.item.online variant="success">Online</b-badge>
+                    <b-badge v-show=!data.item.online variant="danger">Offline</b-badge>
+
+                </template>                     
+
+                <div slot="table-busy" class="text-center text-danger my-2">
+                    <b-spinner class="align-middle"></b-spinner>
+                    <strong>Loading...</strong>
+                </div>      
+            </b-table>
+
+            <hr/>
+
             <h2>List Virtual Devices</h2>
 
             <b-table
@@ -33,9 +58,9 @@
                     <strong>Loading...</strong>
                 </div>
             </b-table>
-        </b-col>
 
-        <b-col cols="5" style="padding-left: 50px;">
+            <hr/>
+
             <h2>List VMS</h2>
 
             <b-table
@@ -77,31 +102,19 @@
             <loading :active.sync="isLoading" :is-full-page="true"></loading>
             <b-alert :show=msg.show :variant=msg.type>
                 {{ msg.text }}
-            </b-alert>
-
-            <!--
-
-            <h2> Load chain model </h2>
-            <h1>{{chainName}} </h1>  
-
-            <h2> Publicado en </h2>
-            <h1><b>IP: </b>{{response.results[0].ip}}<b> PORT: </b> {{response.results[0].port}}</h1>
-
-            -->
+            </b-alert>          
 
             <div>
-                <label>File
-                    <input type="file" id="file" ref="file" v-on:change="handleFileUpload()"/>
-                </label>
-                <b-button variant="primary" v-on:click="submitFile()">Submit</b-button>
-            </div> 
-    <!--
-            <div>
-                <label>File2
-                    <input type="file" @change="handleFileUpload( $event )" />
-                </label>
-                <button v-on:click="activate( )">Submit</button>
-            </div>  -->
+                <label>File 
+                    <b-form-file 
+                    v-model="file"
+                    :state="Boolean(file)"
+                    placeholder="Select file..."
+                    drop-placeholder="Drop file here..."
+                    ></b-form-file> 
+                    <b-button variant="primary" v-on:click="submitFile()">Submit</b-button>                    
+                </label>                
+            </div>     
         </b-col>
     </b-row >    
 </template>
@@ -110,6 +123,7 @@
 import { apiChain } from './api';
 import { apiDevice } from '../device/api'
 import { apiVmsType } from '../vmsType/api'
+import { apiNode } from '../node/api'
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css';
 export default {
@@ -117,8 +131,8 @@ export default {
     components: {Loading}, 
     data() {
         return {
+            file:null,
             isBusy: true,
-            file: '',
             isLoading: false,
             chainName: '',
             fieldsDevices: [{
@@ -138,6 +152,17 @@ export default {
             },{
                 key: 'listPorts'
             }],
+            fieldsNodes: [{
+                key: 'name'
+            },{
+                key: 'ip',
+                label: 'IP',
+                class: 'nodeIpList'
+            },{
+                key: 'online',
+                label: 'Status',
+                class: 'nodeStatusList'
+            }],
             msg: {
                 text: false,
                 type: '',
@@ -151,7 +176,8 @@ export default {
                 }]
             },
             mydevices: [],
-            mytypevms: []
+            mytypevms: [],
+            myNodes: []
         }
     },
     methods: {
@@ -163,78 +189,49 @@ export default {
         },
         submitFile() {
 
-            //env.preventDefault()
-            this.isLoading = true;
+            if(!this.file){
 
-            let form = {
-                name: 'test XXXX',
-                description: 'description test'
-            }
-
-            apiChain.newChainFile( form )
-                .then((data) => {
-                    this.msg.text = "SERVICE CHAIN CREATED"
-                    this.msg.type = "success"
-                    this.msg.show = true
-                    this.isLoading = false
-
-                    console.log('RESPUESTA DE BACK...', data)
-
-                    if(data.status) {
-                        this.chainName = data.nameChain
-                        this.response.status = data.status
-                        this.response.results = data.data
-                    }
-
+                this.$swal.fire({
+                title: 'No File selected',
+                text: `Please select a file in YAML format.`,
+                type: 'Error',
+                showCancelButton: true,
+                //confirmButtonText: 'Yes, delete it!'
                 })
-                .catch(e => {
-                    this.msg.text = `SERVICE CHAIN CREATED`
-                    this.msg.type = "success"
-                    this.msg.show = true
-                    this.isLoading = false
 
-                    console.log('RESPUESTA DE BACK...', e)
+            }else{
+                let dataForm = new FormData();
+                dataForm.append(`file`, this.file);
 
-                    if(e.status) {
-                        this.chainName = e.nameChain
-                        this.response.status = e.status
-                        this.response.results = e.data
-                    }
-                })
-        },
-        activate() {
-            console.log('HICE CLIC EN activate')
-            this.isLoading = true; 
-            setTimeout(this.submitFile2, 5000)            
-        },
-        submitFile2(){
+                apiChain.newChainFile( dataForm )
+                    .then((data) => {
+                        this.msg.text = "SERVICE CHAIN CREATED"
+                        this.msg.type = "success"
+                        this.msg.show = true
+                        this.isLoading = false
 
-            console.log('ENTRE A submitFile2 ')            
-            //this.isLoading = true;
+                        console.log('RESPUESTA DE BACK...', data)
 
-            //this.activate();
-            this.msg.text = "Multimedia chain created"
-            this.msg.type = "success"
-            this.msg.show = true
-            this.isLoading = false
+                        if(data.status) {
+                            this.chainName = data.nameChain
+                            this.response.status = data.status
+                            this.response.results = data.data
+                        }
+                    }).catch(e => {
+                        this.msg.text = `SERVICE CHAIN CREATED`
+                        this.msg.type = "success"
+                        this.msg.show = true
+                        this.isLoading = false
 
+                        console.log('RESPUESTA DE BACK...', e)
 
-            
-
-            /*
-            const data = loadYamlFile('/home/franklin/Desktop/test.yml')
-            console.log('mi data', data);*/
-
-
-            /*
-            try {
-                let name = 'test.yml'
-                console.log('direccion', name);
-                const data = yaml.load( await fs.promises.readFile(name, 'utf8'))
-                console.log('mi data es:', data);
-            } catch(e) {
-                console.error('fallo en cargar el yaml', e)
-            }*/
+                        if(e.status) {
+                            this.chainName = e.nameChain
+                            this.response.status = e.status
+                            this.response.results = e.data
+                        }
+                    })
+            }   
         },
         refreshDevices() {
             this.isBusy = true
@@ -272,12 +269,26 @@ export default {
                     console.log(e)
                     this.isBusy = false
                 })
+        },
+        refreshNodes() {
+            this.isBusy = true
+            this.isLoading = false
+            apiNode.getNodes()
+                .then((data) => {
+                    this.myNodes = data
+                    this.isBusy = false
+                })
+                .catch(e => {
+                    console.log(e)
+                    this.isBusy = false
+                })
         }
 
     },
     created() {
         this.refreshDevices()
         this.refreshtypevms()
+        this.refreshNodes()
     }
 }
 </script>
