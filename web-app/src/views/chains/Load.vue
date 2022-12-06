@@ -189,15 +189,18 @@ export default {
         },
         submitFile() {
 
+            this.isLoading = true 
+
             if(!this.file){
 
                 this.$swal.fire({
                 title: 'No File selected',
                 text: `Please select a file in YAML format.`,
                 type: 'Error',
-                showCancelButton: true,
+                showCancelButton: true,                
                 //confirmButtonText: 'Yes, delete it!'
                 })
+                this.isLoading = false
 
             }else{
                 let dataForm = new FormData();

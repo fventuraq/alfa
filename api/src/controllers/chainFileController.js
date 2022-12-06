@@ -141,18 +141,18 @@ async function createVms( myVms, myVirtualLInk) {
     let status = ''
 
     //vms.startupParameters = myVms.startupParameters
-    vms.name = myVms.name
-    vms.node = myVms.node
+    vms.name = myVms.vmsName
+    vms.node = myVms.nodeIp
     vms.vmsType = myVms.vmsType
     //vms.forward = []
     vms.forward.push({
-        name: myVirtualLInk.destine.name,
-        ip: myVirtualLInk.destine.ip,
-        port: myVirtualLInk.destine.port,
-        outputType: myVirtualLInk.destine.outputType
+        name: myVirtualLInk.destine.destineName,
+        ip: myVirtualLInk.destine.destineIp,
+        port: myVirtualLInk.destine.destinePort,
+        outputType: myVirtualLInk.destine.inputType
     })
 
-    nodeIp = myVms.node
+    nodeIp = myVms.nodeIp
 
     let dataRunVms = await runVms( vms, nodeIp)
     vms.dockerIp = dataRunVms.ip
@@ -219,7 +219,7 @@ async function registerVmsInDevice2 ( params ) {
     
     let vmsId = params.forWard.vmsId
     let deviceId = params.deviceId
-    let port = params.forWard.port
+    let port = params.forWard.destinePort
 
     let registerInDevice = await maestroControllerAux.bindVMStoSRC(vmsId, deviceId, port)
     
@@ -268,29 +268,27 @@ async function registerVms( params ) {
 
 const chainFileController = {
 
-    post: async ( req, res, next ) => {        
-
+    post: async ( req, res, next ) => {  
+        
         if(!req.files) {            
             return res.status(500).json("file is not fund")            
         }
 
         let myFile = req.files[0]
-        let basePath = myFile.destination + myFile.filename        
+        let basePath = myFile.destination + myFile.filename   
 
         try {
-            const doc =  await yaml.load(fs.readFileSync( basePath, 'utf8'));
-
-            //console.log( 'LLEGO ACA...', doc.chainModel )
+            const doc =  await yaml.load(fs.readFileSync(basePath, 'utf8'));
 
             let numVmss = doc.chainModel.vmss.length;
 
             let device = doc.chainModel.devices;
             let vmss = doc.chainModel.vmss;
-            let virtualLink= doc.chainModel.link;
+            let virtualLink= doc.chainModel.virtualLinks;
 
             let chain = chainModel();
-            chain.name = doc.chainModel.name
-            let nameChain = doc.chainModel.name
+            chain.name = doc.chainModel.chainName
+            let nameChain = doc.chainModel.chainName
 
             let data = []
 
@@ -298,11 +296,10 @@ const chainFileController = {
 
             for(let i = 0; i < virtualLink.length; i++) {
                 
-                if(virtualLink[i].destine.ip) {
+                if(virtualLink[i].destine.destineIp) {
 
                     for( let v = 0; v < vmss.length; v++) {
-                        if( vmss[v].name === virtualLink[i].origin.name) {
-                            //let vms = new vmsModel();
+                        if( vmss[v].vmsName === virtualLink[i].origin.originName) {
 
                             let responseVms = await createVms( vmss[v], virtualLink[i])
 
@@ -310,11 +307,11 @@ const chainFileController = {
                             vmss[v].status = responseVms.status
                             vmss[v].ip = responseVms.ip  
                             
-                            data.push({ ip:virtualLink[i].destine.ip, port:virtualLink[i].destine.port })
+                            data.push({ ip:virtualLink[i].destine.destineIp, port:virtualLink[i].destine.destinePort })
                             
                             for(let p = 0; p<virtualLink.length; p++){
-                                if( virtualLink[p].destine.name === vmss[v].name ){
-                                    virtualLink[p].destine.ip = responseVms.ip
+                                if( virtualLink[p].destine.destineName === vmss[v].vmsName ){
+                                    virtualLink[p].destine.destineIp = responseVms.ip
                                     virtualLink[p].destine.vmsId = responseVms.vmsChain.vms  
                                 }
                             }
@@ -333,16 +330,14 @@ const chainFileController = {
                 
                 //console.log('ACTIOVE O NO', vmss[j])
                 if(vmss[j].ip) {
-                    let temName = vmss[j].name
+                    let temName = vmss[j].vmsName
 
                     for ( let k = 0; k< virtualLink.length ; k++) {
-                        if( virtualLink[k].destine.name === temName && virtualLink[k].origin.type ==='vms'){                            
-                            virtualLink[k].destine.ip = vmss[j].ip                            
-
-                            //console.log('ENTRO ACAAA.........', virtualLink[k])
+                        if( virtualLink[k].destine.destineName === temName && virtualLink[k].origin.originType ==='vms'){                            
+                            virtualLink[k].destine.destineIp = vmss[j].ip        
 
                             for( let v = 0; v < vmss.length; v++) {
-                                if(vmss[v].name === virtualLink[k].origin.name){
+                                if(vmss[v].vmsName === virtualLink[k].origin.originName){
 
                                     let responseVms = await createVms( vmss[v], virtualLink[k])
                                     console.log( 'RESPONSE OF CREARE VMS MID..', responseVms)
@@ -355,8 +350,8 @@ const chainFileController = {
                                     console.log( 'ID DEL VMS EN MONGO...', responseVms.vmsChain.vms)
 
                                     for(let p = 0; p<virtualLink.length; p++){
-                                        if( virtualLink[p].destine.name === vmss[v].name ){
-                                            virtualLink[p].destine.ip = responseVms.ip
+                                        if( virtualLink[p].destine.destineName === vmss[v].vmsName ){
+                                            virtualLink[p].destine.destineIp = responseVms.ip
                                             virtualLink[p].destine.vmsId = responseVms.vmsChain.vms   
                                         }
                                     }
@@ -371,13 +366,13 @@ const chainFileController = {
             console.log( 'ESTATUS DE MI DATA.....', device)
 
             for( let k = 0; k < virtualLink.length; k++){
-                if( virtualLink[k].origin.type === 'device'  ){
+                if( virtualLink[k].origin.originType === 'device'  ){
 
                     for(let m = 0; m<device.length; m++){
-                        if(virtualLink[k].origin.name === device[m].name){
+                        if(virtualLink[k].origin.originName === device[m].deviceName){
 
                             let params = {
-                                deviceId: device[m].id,
+                                deviceId: device[m].deviceId,
                                 forWard: virtualLink[k].destine,
                                 nameChain: nameChain
                             }
